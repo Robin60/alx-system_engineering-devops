@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Configure my domain zone:
+# www --> 914-lb-01 53.83.12.3
+# web-01 --> 914-web-01 53.25.12.20
+# web-02 --> 914-web-02 53.25.14.18
+
+
+subdomains=( "www" "lb-01" "web-01" "web-02" )
+
+Dig () {
+    subdomain=$1
+    domain=$2
+
+    dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION:' | tail -1 | awk -v s="$subdomain" 'BEGIN { FS = " " } ; { print "The subdomain " s " is a " $4 " record and points to " $5 }'
+}
+
+if [ $# -eq 1 ]; then
+    domain="$1"
+    for i in "${subdomains[@]}"
+    do
+	Dig "$i" "$domain"
+    done
+elif [ $# -eq 2 ]; then
+    domain="$1"
+    subdomain="$2"
+    Dig "$subdomain" "$domain"
+fi
