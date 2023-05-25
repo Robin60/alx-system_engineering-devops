@@ -1,18 +1,34 @@
 #!/usr/bin/python3
-"""Exports to-do list information for a given employee ID to CSV format."""
+
+"""
+Python script that, using a REST API, for a given employee ID,
+returns information about his/her TODO list progress.
+"""
+
+from requests import get
+from sys import argv
 import csv
-import requests
-import sys
+
 
 if __name__ == "__main__":
-    user_id = sys.argv[1]
-    url = "https://jsonplaceholder.typicode.com/"
-    user = requests.get(url + "users/{}".format(user_id)).json()
-    username = user.get("username")
-    todos = requests.get(url + "todos", params={"userId": user_id}).json()
-
-    with open("{}.csv".format(user_id), "w", newline="") as csvfile:
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-        [writer.writerow(
-            [user_id, username, t.get("completed"), t.get("title")]
-         ) for t in todos]
+    res1 = get('https://jsonplaceholder.typicode.com/todos/')
+    todos = res1.json()
+    completed = 0
+    total = 0
+    tasks = []
+    res2 = get('https://jsonplaceholder.typicode.com/users')
+    users = res2.json()
+    for i in users:
+        if i.get('id') == int(argv[1]):
+            employee = i.get('name')
+    
+    with open(argv[1] + '.csv', 'w', newline='') as file:
+        out = csv.writer(file, quoting=csv.QUOTE_ALL)
+        for i in todos:
+            row = []
+            if i['userId'] == int(argv[1]):
+                row.append(i['userId'])
+                row.append(employee)
+                row.append(i['completed'])
+                row.append(i['title'])
+                out.writerow(row)
