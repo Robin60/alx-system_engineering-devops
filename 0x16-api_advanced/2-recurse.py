@@ -12,12 +12,12 @@ def recurse(subreddit, hot_list=[], count=0, after=''):
                     v1.0.0 (by /u/firdaus_cartoon_jr)"
                     }
     params = {
-            'after':after,
-            'count':count,
-            'limit':100
+            'after': after,
+            'count': count,
+            'limit': 100
             }
     resp = requests.get(url, headers=headers, params=params,
-            allow_redirects=False)
+                        allow_redirects=False)
     if resp.status_code in (302, 404):
         return 404
     resp_json = resp.json()
